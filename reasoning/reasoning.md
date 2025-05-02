@@ -141,7 +141,7 @@ sequenceDiagram
     Payments Module->>Payment System: Request payment link
     Payment System->>Payments Module: Payment link
     Payments Module->>Orders Module:  Payment link
-    Orders Module->>User: HTTP 201 Order created; with payment link
+    Orders Module->>User: HTTP 201 Order created, with payment link
     User-->>Payment System: Enters payment data
     Payment System-->>User: Success
     Payment System-->>Payments Module: Webhook: success notification
