@@ -87,11 +87,22 @@ Alteranatives:
 - Mongo DB Atlas
 - Azure Cosmos DB
 
-Regarding Orders, I recommend to store warehouse data and orders in one database, if it is possible. It MUST guarantee ACID in roder to avoid distributed transactions.
+Regarding Orders, I recommend to store warehouse data and orders in one database, if it is possible. Preferably, RDB solution. It MUST guarantee ACID in order to avoid distributed transactions.
 
 ## Step 4: Application architecture and deployment
 
 For this scenario I recommend to start with monolith as a solution requires minimum operational complexity and development time.
+
+Alternatives:
+
+- Microservices - can be considered when smth of following required: faster deploys required, team growth, unbalanced workload, tech stack differentiation.
+
+For deployment purpose I recomend to start with AWS Elastic Beanstalk for the same reasons: operational simplicity, minimum DevOps qualification.
+
+Alternatives:
+
+- Managed docker environment(AWS ECS, Azure Container Instances) - can be considered for better scalability and cost optimizing, but requires more expertise
+- Serverless(AWS Lambda, Azure Functions) - can be considered for non-predictable on-demand workload
 
 ### Working with cart
 
@@ -142,3 +153,11 @@ sequenceDiagram
     Orders Module->>Orders/Warehouse DB: Update order status
     Orders/Warehouse DB->>Orders Module: Updated
 ```
+
+## Summary
+
+There are brief overview of design desisions:
+
+1. Application architecture - monolith(at start, more simple development and operation)
+2. DBMS - Document-oriented for cart, relational for orders and stock
+3. Store orders and stock in the same DB to ensure ACID guaranties
