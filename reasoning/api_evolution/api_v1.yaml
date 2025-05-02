@@ -1,0 +1,228 @@
+openapi: 3.0.0
+info:
+  title: E-commerce Cart & Order API
+  version: 1.0.0
+  description: API for managing shopping carts and order processing
+servers:
+  - url: https://api.example.com/v1
+    description: Production server
+
+tags:
+  - name: Cart
+    description: Shopping cart operations
+  - name: Order
+    description: Order management
+
+paths:
+  /cart/items:
+    post:
+      tags: [Cart]
+      summary: Add item to cart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartItemRequest'
+      responses:
+        '201':
+          description: Item added to cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        '400':
+          description: Invalid input
+        '409':
+          description: Product out of stock
+
+  /cart/items/{itemId}:
+    put:
+      tags: [Cart]
+      summary: Update cart item quantity
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+                  minimum: 0
+      responses:
+        '200':
+          description: Quantity updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  itemId:
+                    type: string
+                  quantity:
+                    type: integer
+                  updatedTotal:
+                    type: number
+        '404':
+          description: Item not found
+
+    delete:
+      tags: [Cart]
+      summary: Remove item from cart
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Item removed successfully
+        '404':
+          description: Item not found
+
+  /cart:
+    get:
+      tags: [Cart]
+      summary: Get cart contents
+      responses:
+        '200':
+          description: Cart contents retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        '404':
+          description: Cart not found
+
+  /orders:
+    post:
+      tags: [Order]
+      summary: Create new order from cart
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: Invalid input
+        '409':
+          description: Cart validation failed
+
+components:
+  schemas:
+    CartItemRequest:
+      type: object
+      required: [productId]
+      properties:
+        productId:
+          type: string
+          example: "prod_456"
+        quantity:
+          type: integer
+          minimum: 1
+          default: 1
+          example: 2
+
+    Cart:
+      type: object
+      properties:
+        cartId:
+          type: string
+          example: "cart_123"
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              itemId:
+                type: string
+                example: "item_789"
+              productId:
+                type: string
+                example: "prod_456"
+              name:
+                type: string
+                example: "Футболка Premium"
+              price:
+                type: number
+                format: float
+                example: 29.99
+              quantity:
+                type: integer
+                example: 2
+        total:
+          type: number
+          format: float
+          example: 59.98
+        currency:
+          type: string
+          example: "USD"
+
+    OrderRequest:
+      type: object
+      required: [cartId, shippingAddress]
+      properties:
+        cartId:
+          type: string
+          example: "cart_123"
+        shippingAddress:
+          type: object
+          properties:
+            street:
+              type: string
+              example: "ул. Пушкинская, 15"
+            city:
+              type: string
+              example: "Киев"
+        paymentMethodId:
+          type: string
+          example: "pm_abc"
+
+    OrderResponse:
+      type: object
+      properties:
+        orderId:
+          type: string
+          example: "ord_abc123"
+        status:
+          type: string
+          enum: [pending_payment, processing, completed, cancelled]
+          example: "pending_payment"
+        total:
+          type: number
+          format: float
+          example: 59.98
+        paymentUrl:
+          type: string
+          example: "/v1/payments?orderId=ord_abc123"
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []

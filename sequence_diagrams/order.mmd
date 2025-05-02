@@ -1,0 +1,30 @@
+sequenceDiagram
+    autonumber
+
+    participant User
+    box rgb(59,59,59) Server
+    participant Orders Module
+    participant Payments Module
+    participant Fulfillment Module
+    end
+    participant Orders/Warehouse DB
+    participant Payment System
+
+    User->>Orders Module: POST /orders
+    Orders Module->>Orders/Warehouse DB: Create an order/adjust stock
+    Orders/Warehouse DB->>Orders Module: Created
+    Orders Module->>Payments Module: Request payment link
+    Payments Module->>Payment System: Request payment link
+    Payment System->>Payments Module: Payment link
+    Payments Module->>Orders Module:  Payment link
+    Orders Module->>User: HTTP 302 Redirect: <payment link>
+    User-->>Payment System: Enters payment data
+    Payment System-->>User: Success
+    Payment System-->>Payments Module: Webhook: success notification
+    Payments Module->>Orders Module: Notification: order X payed
+    Orders Module->>Orders/Warehouse DB: Update order status
+    Orders/Warehouse DB->>Orders Module: Updated
+    Orders Module->>Fulfillment Module: Trigger fulfillment
+    Fulfillment Module->>Orders Module: Triggered
+    Orders Module->>Orders/Warehouse DB: Update order status
+    Orders/Warehouse DB->>Orders Module: Updated
