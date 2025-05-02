@@ -106,12 +106,6 @@ paths:
     post:
       tags: [Order]
       summary: Create new order from cart
-      parameters:
-        - name: Idempotency-Key
-          in: header
-          required: true
-          schema:
-            type: string
       requestBody:
         required: true
         content:
@@ -172,10 +166,6 @@ components:
               quantity:
                 type: integer
                 example: 2
-        total:
-          type: number
-          format: float
-          example: 59.98
         currency:
           type: string
           example: "USD"
@@ -196,9 +186,6 @@ components:
             city:
               type: string
               example: "Киев"
-        paymentMethodId:
-          type: string
-          example: "pm_abc"
 
     OrderResponse:
       type: object

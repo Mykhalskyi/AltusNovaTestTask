@@ -8,7 +8,7 @@ The company has limited internal technical expertise and prefers solutions that 
 
 ## Task Overview
 
-### Functional requirements (discussed additionaly)
+### Functional requirements (discussed with Stas Skorobogach)
 
 Implement 1 basic use case: user adds/removes items to the cart -> tap order -> redirected to payment -> redirect back after successful payment.
 
@@ -48,7 +48,7 @@ You may submit architecture diagrams, implementation samples, or other materials
 
 **Communication**: How effectively can you explain your approach to different audiences?
 
-## **Estimated load** (discussed additionaly)
+## **Estimated load** (discussed with Stas Skorobogach)
 
 10000 orders / day
 
